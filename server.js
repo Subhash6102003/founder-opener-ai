@@ -66,6 +66,7 @@ app.post('/api/generate', async (req, res) => {
         siteTitle: scrapedData.title,
         extractedSummary: scrapedData.heroSummary,
         opener: result.opener,
+        telemetry: result.telemetry,
         isMock: result.isMock || false,
         message: result.message,
         metrics: {

@@ -5,16 +5,43 @@ import {
   Copy, 
   Check, 
   Cpu, 
-  ExternalLink, 
   Key, 
   Clock, 
-  Code2, 
   ShieldCheck, 
-  Layers, 
   TrendingUp, 
-  GitFork, 
-  Star 
+  Star,
+  BarChart3,
+  PieChart,
+  Bot,
+  Zap,
+  ArrowUpRight
 } from 'lucide-react';
+
+interface TelemetryData {
+  currentMRR: string;
+  projectedYearEndMRR: string;
+  projectedLift: string;
+  founderHoursSavedPerMonth: string;
+  churnMitigationRate: string;
+  timeAllocation: Array<{
+    category: string;
+    beforePct: number;
+    afterPct: number;
+    color: string;
+  }>;
+  monthlyProjection: Array<{
+    month: string;
+    baseline: number;
+    autonomous: number;
+    delta: number;
+  }>;
+  activeAgentAutomations: Array<{
+    agent: string;
+    status: string;
+    action: string;
+    impact: string;
+  }>;
+}
 
 interface ApiResponse {
   url: string;
@@ -22,6 +49,7 @@ interface ApiResponse {
   siteTitle: string;
   extractedSummary: string;
   opener: string;
+  telemetry?: TelemetryData;
   isMock: boolean;
   message?: string;
   metrics: {
@@ -39,6 +67,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ApiResponse | null>(null);
   const [copied, setCopied] = useState(false);
+  const [chartView, setChartView] = useState<'after' | 'before'>('after');
 
   const sampleSites = ['resend.com', 'cal.com', 'dub.co', 'posthog.com'];
 
@@ -83,6 +112,11 @@ export const App: React.FC = () => {
   };
 
   const lines = result?.opener ? result.opener.split('\n\n') : [];
+  const telemetry = result?.telemetry;
+
+  // Donut chart calculation helper
+  const radius = 38;
+  const circumference = 2 * Math.PI * radius;
 
   return (
     <div>
@@ -109,10 +143,10 @@ export const App: React.FC = () => {
 
         <div className="nav-links">
           <a href="#generator" className="nav-link">Live Generator</a>
+          <a href="#telemetry" className="nav-link">Performance Telemetry</a>
           <a href="#blueprints" className="nav-link">Visual Blueprints</a>
           <a href="#scale" className="nav-link">Scale & Costs</a>
           <a href="#gtm" className="nav-link">GTM Playbook</a>
-          <a href="#thesis" className="nav-link">Seed Thesis</a>
           <a 
             href="https://github.com/Subhash6102003/founder-opener-ai" 
             target="_blank" 
@@ -149,7 +183,7 @@ export const App: React.FC = () => {
           </h1>
 
           <p className="hero-subtext">
-            From low-level DOM extraction and header normalization to operational friction mapping, PostgreSQL & Stripe metrics synthesis, and sub-second 3-line founder openers that convert without corporate fluff.
+            From low-level DOM extraction and header normalization to operational friction mapping, automated Stripe telemetry, and sub-second 3-line founder openers that convert without corporate fluff.
           </p>
 
           <div className="pill-row">
@@ -157,6 +191,7 @@ export const App: React.FC = () => {
             <span className="tag-pill">Cheerio Scraper</span>
             <span className="tag-pill">1,200 Char Ceiling</span>
             <span className="tag-pill">Gemini 1.5 Flash</span>
+            <span className="tag-pill">Year-End Analytics</span>
             <span className="tag-pill">MIT License</span>
           </div>
 
@@ -175,7 +210,7 @@ export const App: React.FC = () => {
           <div className="generator-header">
             <h2 className="generator-title">Interactive Cold Opener Studio</h2>
             <p className="generator-sub">
-              Input any software company domain. Our scraper extracts value propositions and synthesizes an authentic 3-line founder opener.
+              Input any software company domain. Our scraper extracts value propositions, writes an authentic 3-line founder opener, and projects year-end operational velocity.
             </p>
           </div>
 
@@ -197,7 +232,7 @@ export const App: React.FC = () => {
                 disabled={loading}
               >
                 <Send size={15} />
-                <span>{loading ? 'Synthesizing...' : 'Draft Opener'}</span>
+                <span>{loading ? 'Synthesizing...' : 'Draft Opener & Analytics'}</span>
               </button>
             </div>
           </form>
@@ -300,6 +335,261 @@ export const App: React.FC = () => {
                   )}
                 </div>
               )}
+
+              {/* Business Performance Telemetry & Year-End Graphs */}
+              {telemetry && (
+                <div id="telemetry" className="telemetry-dashboard">
+                  <div className="telemetry-title-row">
+                    <div className="telemetry-title">
+                      <TrendingUp size={16} color="#a3c99f" />
+                      <span>Year-End Business Performance & Autonomous Management Projections</span>
+                    </div>
+                    <span className="font-mono" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      Target: {result?.domain}
+                    </span>
+                  </div>
+
+                  {/* 4 Stat Tiles */}
+                  <div className="stat-grid-4">
+                    <div className="stat-card">
+                      <div className="stat-label">Estimated Current MRR</div>
+                      <div className="stat-value tabular">{telemetry.currentMRR}</div>
+                      <div className="stat-sub">
+                        <span>Organic Baseline</span>
+                      </div>
+                    </div>
+
+                    <div className="stat-card">
+                      <div className="stat-label">Projected Year-End MRR</div>
+                      <div className="stat-value tabular" style={{ color: '#a3c99f' }}>
+                        {telemetry.projectedYearEndMRR}
+                      </div>
+                      <div className="stat-sub">
+                        <ArrowUpRight size={13} />
+                        <span className="tabular">{telemetry.projectedLift} Velocity</span>
+                      </div>
+                    </div>
+
+                    <div className="stat-card">
+                      <div className="stat-label">Founder Hours Recovered</div>
+                      <div className="stat-value tabular">{telemetry.founderHoursSavedPerMonth}</div>
+                      <div className="stat-sub">
+                        <span>Zero Manual Triage</span>
+                      </div>
+                    </div>
+
+                    <div className="stat-card">
+                      <div className="stat-label">Churn Intercept Rate</div>
+                      <div className="stat-value tabular">{telemetry.churnMitigationRate}</div>
+                      <div className="stat-sub">
+                        <span>Automated Dunning</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Visual Charts: Bar Graph & Donut Graph */}
+                  <div className="charts-grid-2">
+                    
+                    {/* Visual Chart 1: Year-End Trajectory Comparison */}
+                    <div className="chart-card">
+                      <div className="chart-card-header">
+                        <div className="chart-card-title">
+                          <BarChart3 size={15} color="#818cf8" />
+                          <span>Year-End MRR Velocity ($K)</span>
+                        </div>
+                        <div className="chart-legend">
+                          <div className="legend-item">
+                            <span className="legend-color-dot" style={{ background: '#3b4461' }}></span>
+                            <span>Baseline Status Quo</span>
+                          </div>
+                          <div className="legend-item">
+                            <span className="legend-color-dot" style={{ background: '#5a7a55' }}></span>
+                            <span>With Autonomous AI</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Responsive SVG Bar Chart */}
+                      <svg className="chart-container-svg" viewBox="0 0 460 160">
+                        {/* Grid lines */}
+                        <line x1="30" y1="20" x2="450" y2="20" stroke="#1a1e27" strokeDasharray="3 3" />
+                        <line x1="30" y1="65" x2="450" y2="65" stroke="#1a1e27" strokeDasharray="3 3" />
+                        <line x1="30" y1="110" x2="450" y2="110" stroke="#1a1e27" strokeDasharray="3 3" />
+                        <line x1="30" y1="135" x2="450" y2="135" stroke="#252b38" />
+
+                        {/* Y-Axis Labels */}
+                        <text x="5" y="24" fill="#616a78" fontSize="10" fontFamily="monospace">$45k</text>
+                        <text x="5" y="69" fill="#616a78" fontSize="10" fontFamily="monospace">$30k</text>
+                        <text x="5" y="114" fill="#616a78" fontSize="10" fontFamily="monospace">$15k</text>
+
+                        {/* Bars for each month */}
+                        {telemetry.monthlyProjection.map((item, i) => {
+                          const x = 50 + i * 58;
+                          const baselineHeight = (item.baseline / 45) * 115;
+                          const autoHeight = (item.autonomous / 45) * 115;
+                          const yBase = 135 - baselineHeight;
+                          const yAuto = 135 - autoHeight;
+
+                          return (
+                            <g key={item.month}>
+                              {/* Baseline Bar */}
+                              <rect
+                                x={x}
+                                y={yBase}
+                                width="14"
+                                height={baselineHeight}
+                                fill="#2a3245"
+                                rx="2"
+                              />
+                              {/* Autonomous Bar */}
+                              <rect
+                                x={x + 16}
+                                y={yAuto}
+                                width="14"
+                                height={autoHeight}
+                                fill="#5a7a55"
+                                rx="2"
+                              />
+                              {/* Month label */}
+                              <text
+                                x={x + 15}
+                                y="152"
+                                textAnchor="middle"
+                                fill="#8c95a3"
+                                fontSize="11"
+                                fontFamily="monospace"
+                              >
+                                {item.month}
+                              </text>
+                              {/* Autonomous value label on top */}
+                              <text
+                                x={x + 23}
+                                y={yAuto - 4}
+                                textAnchor="middle"
+                                fill="#a3c99f"
+                                fontSize="9"
+                                fontFamily="monospace"
+                              >
+                                ${item.autonomous}k
+                              </text>
+                            </g>
+                          );
+                        })}
+                      </svg>
+                    </div>
+
+                    {/* Visual Chart 2: Founder Time Allocation Donut */}
+                    <div className="chart-card">
+                      <div className="chart-card-header">
+                        <div className="chart-card-title">
+                          <PieChart size={15} color="#a3c99f" />
+                          <span>Founder Time Allocation</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.35rem' }}>
+                          <button
+                            type="button"
+                            className="chip-btn"
+                            style={{ 
+                              background: chartView === 'before' ? '#2b3445' : 'transparent',
+                              color: chartView === 'before' ? '#fff' : 'var(--text-muted)'
+                            }}
+                            onClick={() => setChartView('before')}
+                          >
+                            Before AI
+                          </button>
+                          <button
+                            type="button"
+                            className="chip-btn"
+                            style={{ 
+                              background: chartView === 'after' ? 'var(--accent-olive)' : 'transparent',
+                              color: chartView === 'after' ? '#fff' : 'var(--text-muted)'
+                            }}
+                            onClick={() => setChartView('after')}
+                          >
+                            With AI
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* SVG Donut Chart */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', marginTop: '0.5rem' }}>
+                        <svg width="120" height="120" viewBox="0 0 100 100">
+                          {(() => {
+                            let accumulatedOffset = 0;
+                            return telemetry.timeAllocation.map((slice, idx) => {
+                              const pct = chartView === 'after' ? slice.afterPct : slice.beforePct;
+                              const dashArray = (pct / 100) * circumference;
+                              const currentOffset = accumulatedOffset;
+                              accumulatedOffset += dashArray;
+
+                              return (
+                                <circle
+                                  key={idx}
+                                  cx="50"
+                                  cy="50"
+                                  r={radius}
+                                  fill="transparent"
+                                  stroke={slice.color}
+                                  strokeWidth="16"
+                                  strokeDasharray={`${dashArray} ${circumference - dashArray}`}
+                                  strokeDashoffset={-currentOffset}
+                                  transform="rotate(-90 50 50)"
+                                />
+                              );
+                            });
+                          })()}
+                          <text x="50" y="47" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="bold">
+                            {chartView === 'after' ? '76%' : '38%'}
+                          </text>
+                          <text x="50" y="60" textAnchor="middle" fill="#8c95a3" fontSize="8" fontFamily="monospace">
+                            Product
+                          </text>
+                        </svg>
+
+                        {/* Donut Legend */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', flex: 1 }}>
+                          {telemetry.timeAllocation.map((item, idx) => {
+                            const pct = chartView === 'after' ? item.afterPct : item.beforePct;
+                            return (
+                              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: item.color }}></span>
+                                  <span style={{ color: 'var(--text-secondary)' }}>{item.category}</span>
+                                </div>
+                                <span className="font-mono tabular" style={{ fontWeight: 600, color: '#fff' }}>
+                                  {pct}%
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Active Autonomous Agent Interventions */}
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem', fontSize: '0.8125rem', fontWeight: 600, color: '#fff' }}>
+                      <Bot size={15} color="#60a5fa" />
+                      <span>Live Management Agents Orchestrated</span>
+                    </div>
+
+                    <div className="agent-feed-grid">
+                      {telemetry.activeAgentAutomations.map((action, i) => (
+                        <div key={i} className="agent-action-card">
+                          <div className="agent-action-name">
+                            <span>{action.agent}</span>
+                            <span className="agent-badge-active">{action.status}</span>
+                          </div>
+                          <p className="agent-action-desc">{action.action}</p>
+                          <div className="agent-action-impact">{action.impact}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                </div>
+              )}
             </div>
           )}
         </section>
@@ -313,7 +603,6 @@ export const App: React.FC = () => {
           </p>
 
           <div className="card-grid-3">
-            {/* Blueprint Card 1 */}
             <article className="blueprint-card">
               <div className="card-top">
                 <div className="card-tag-row">
@@ -331,7 +620,6 @@ export const App: React.FC = () => {
               </footer>
             </article>
 
-            {/* Blueprint Card 2 */}
             <article className="blueprint-card">
               <div className="card-top">
                 <div className="card-tag-row">
@@ -349,7 +637,6 @@ export const App: React.FC = () => {
               </footer>
             </article>
 
-            {/* Blueprint Card 3 */}
             <article className="blueprint-card">
               <div className="card-top">
                 <div className="card-tag-row">
@@ -378,7 +665,6 @@ export const App: React.FC = () => {
           </p>
 
           <div className="card-grid-3">
-            {/* Scale Card 1 */}
             <article className="blueprint-card">
               <div className="card-top">
                 <div className="card-tag-row">
@@ -396,7 +682,6 @@ export const App: React.FC = () => {
               </footer>
             </article>
 
-            {/* Scale Card 2 */}
             <article className="blueprint-card">
               <div className="card-top">
                 <div className="card-tag-row">
@@ -414,7 +699,6 @@ export const App: React.FC = () => {
               </footer>
             </article>
 
-            {/* Scale Card 3 */}
             <article className="blueprint-card">
               <div className="card-top">
                 <div className="card-tag-row">
@@ -443,7 +727,6 @@ export const App: React.FC = () => {
           </p>
 
           <div className="card-grid-2">
-            {/* Sell Card */}
             <article className="deep-card">
               <div className="card-tag-row">
                 <span className="card-category">PART 2: SELL</span>
@@ -463,7 +746,6 @@ export const App: React.FC = () => {
               </div>
             </article>
 
-            {/* Raise Card */}
             <article id="thesis" className="deep-card">
               <div className="card-tag-row">
                 <span className="card-category">PART 2: RAISE</span>

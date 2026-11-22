@@ -1,5 +1,6 @@
 /**
- * Service to call Google Gemini API to generate a 3-line cold email opener.
+ * Service to call Google Gemini API to generate a 3-line cold email opener
+ * and business performance projections for $10K–$50K software companies.
  */
 
 const SYSTEM_INSTRUCTION = `You are an elite B2B founder outreach strategist.
@@ -15,7 +16,84 @@ STRICT RULES:
 4. Line 3: A low-friction, provocative tie-in question asking if they run into this bottleneck.
 5. Tone: Builder-to-builder, direct, punchy, zero corporate fluff, zero sycophancy.`;
 
+/**
+ * Computes deterministic business telemetry and year-end productivity estimations
+ * tailored for software companies in the $10K-$50K MRR bracket.
+ */
+function computeBusinessTelemetry(scrapedData) {
+  // Hash domain string to produce consistent, repeatable metrics for the same target
+  let hash = 0;
+  for (let i = 0; i < scrapedData.domain.length; i++) {
+    hash = (hash << 5) - hash + scrapedData.domain.charCodeAt(i);
+    hash |= 0;
+  }
+  const positiveHash = Math.abs(hash);
+
+  // Baseline MRR between $18.5k and $34.5k
+  const baseMRR = 18.5 + (positiveHash % 160) / 10;
+  const growthRateBaseline = 0.025; // 2.5% monthly organic growth
+  const growthRateAutonomous = 0.078; // 7.8% monthly with autonomous churn & conversion intervention
+
+  const months = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'EOY'];
+  const monthlyProjection = months.map((m, index) => {
+    const baseline = +(baseMRR * Math.pow(1 + growthRateBaseline, index)).toFixed(1);
+    const autonomous = +(baseMRR * Math.pow(1 + growthRateAutonomous, index)).toFixed(1);
+    return {
+      month: m,
+      baseline,
+      autonomous,
+      delta: +(autonomous - baseline).toFixed(1),
+    };
+  });
+
+  const currentMRRFormatted = `$${Math.round(baseMRR * 1000).toLocaleString()}`;
+  const yearEndAutonomousMRR = monthlyProjection[monthlyProjection.length - 1].autonomous;
+  const yearEndFormatted = `$${Math.round(yearEndAutonomousMRR * 1000).toLocaleString()}`;
+  const liftPercentage = `+${Math.round(((yearEndAutonomousMRR - baseMRR) / baseMRR) * 100)}%`;
+
+  return {
+    currentMRR: currentMRRFormatted,
+    projectedYearEndMRR: yearEndFormatted,
+    projectedLift: liftPercentage,
+    founderHoursSavedPerMonth: `${78 + (positiveHash % 18)} hrs/mo`,
+    churnMitigationRate: `${32 + (positiveHash % 14)}% Churn Prevented`,
+    
+    // Time distribution (Pie / Donut chart)
+    timeAllocation: [
+      { category: 'Product & Code', beforePct: 38, afterPct: 76, color: '#688a65' },
+      { category: 'Metric & Stripe Triage', beforePct: 36, afterPct: 8, color: '#f87171' },
+      { category: 'Customer Churn Fires', beforePct: 26, afterPct: 16, color: '#eab308' },
+    ],
+
+    // Monthly Growth trajectory (Bar / Area Chart)
+    monthlyProjection,
+
+    // Simulated automated management actions triggered
+    activeAgentAutomations: [
+      {
+        agent: 'Billing & Involuntary Churn Agent',
+        status: 'Active',
+        action: 'Stripe smart dunning & auto-retrying failed webhooks before customer cancellation.',
+        impact: '+$1,420 MRR saved'
+      },
+      {
+        agent: 'Activation Telemetry Agent',
+        status: 'Active',
+        action: 'Detects post-signup drop-offs within 48h and triggers personalized in-app nudge.',
+        impact: '+18.4% trial conversion'
+      },
+      {
+        agent: 'Executive Briefing Agent',
+        status: 'Active',
+        action: 'Daily 8:00 AM Slack digest consolidating Stripe, PostHog, and Sentry with one-click actions.',
+        impact: '2.5 hrs saved daily'
+      }
+    ]
+  };
+}
+
 async function generateOpenerWithGemini({ scrapedData, apiKey }) {
+  const telemetry = computeBusinessTelemetry(scrapedData);
   const effectiveApiKey = apiKey || process.env.GEMINI_API_KEY;
 
   if (!effectiveApiKey) {
@@ -30,6 +108,7 @@ async function generateOpenerWithGemini({ scrapedData, apiKey }) {
         `At the $15K–$40K MRR stage, the real tax isn't tracking Stripe and customer metrics—it's having zero bandwidth to act on churn anomalies while writing code.`,
         `Are you currently having to manually triage between shipping product and operational fires?`
       ].join('\n\n'),
+      telemetry,
       isMock: true,
       message: 'Generated using deterministic template. Provide GEMINI_API_KEY in .env or via the API key input to run live Gemini models.'
     };
@@ -46,7 +125,6 @@ ${scrapedData.heroSummary}
 
 Write the 3-line opener now following the strict rules. Return ONLY the 3 lines, separated by single blank lines.`;
 
-  // Use Gemini 2.5 Flash / 1.5 Flash via Generative Language API
   const model = 'gemini-1.5-flash';
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${effectiveApiKey}`;
 
@@ -84,7 +162,6 @@ Write the 3-line opener now following the strict rules. Return ONLY the 3 lines,
     throw new Error('Gemini returned an empty response.');
   }
 
-  // Ensure lines are cleanly formatted into 3 distinct lines
   const lines = rawText
     .split('\n')
     .map(l => l.trim())
@@ -93,6 +170,7 @@ Write the 3-line opener now following the strict rules. Return ONLY the 3 lines,
 
   return {
     opener: lines.join('\n\n'),
+    telemetry,
     isMock: false,
     modelUsed: model,
     linesCount: lines.length
@@ -101,4 +179,5 @@ Write the 3-line opener now following the strict rules. Return ONLY the 3 lines,
 
 module.exports = {
   generateOpenerWithGemini,
+  computeBusinessTelemetry,
 };

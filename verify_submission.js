@@ -46,7 +46,9 @@ What I left out in Part 1 and why:
 
   toolsUsed: `Node.js, Express 5, React 19, Vite, TypeScript, Cheerio, Google Gemini API, Lucide Icons, and Postman.`,
 
-  anythingElse: `The tool includes a working UI and a deterministic fallback mode that runs seamlessly even without an API key, ensuring anyone testing the repo gets instant results with zero setup hurdles.`
+  anythingElse: `Beyond the 3-line opener, I extended the build into a fullstack app with dynamic business telemetry and SVG charts—modeling year-end MRR trajectory, churn mitigation, and founder time-savings calibrated to the scraped company profile.
+
+Since public sites don't expose private Stripe numbers, our engine computes a realistic stage model for this $10K–$50K bracket. It includes an instant fallback mode, running out of the box with zero setup hurdles.`
 };
 
 const limits = {

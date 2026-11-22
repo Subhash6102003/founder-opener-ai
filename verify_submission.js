@@ -46,9 +46,7 @@ What I left out in Part 1 and why:
 
   toolsUsed: `Node.js, Express 5, React 19, Vite, TypeScript, Cheerio, Google Gemini API, Lucide Icons, and Postman.`,
 
-  anythingElse: `Beyond the 3-line opener, I extended the build into a fullstack app with dynamic business telemetry and SVG charts—modeling year-end MRR trajectory, churn mitigation, and founder time-savings calibrated to the scraped company profile.
-
-Since public sites don't expose private Stripe numbers, our engine computes a realistic stage model for this $10K–$50K bracket. It includes an instant fallback mode, running out of the box with zero setup hurdles.`
+  anythingElse: `I really enjoyed building this, so I took it a bit further. Along with the 3-line opener, I added a visual dashboard that estimates year-end revenue and hours saved for the founder, based on their company profile. Obviously public landing pages don't show private Stripe numbers, so the tool simulates realistic metrics for companies in the $10K–$50K range. I also made sure it runs instantly out of the box with zero setup—you don't even need an API key to test it.`
 };
 
 const limits = {

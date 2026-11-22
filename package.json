@@ -1,0 +1,21 @@
+{
+  "name": "founder-opener-ai",
+  "version": "1.0.0",
+  "description": "Autonomous cold email opener generator for small software companies",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "npm run build --prefix client",
+    "dev": "node server.js"
+  },
+  "keywords": ["ai", "cold-email", "b2b-saas", "scrapers", "gemini"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@google/genai": "^3.6.1",
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0"
+  }
+}
